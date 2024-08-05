@@ -1,26 +1,49 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { PostsService } from './posts.service';
-
-interface Post {
-  author: string;
-  title: string;
-  content: string;
-  likeCount: number;
-  commentCount: number;
-}
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  getPost(): Post {
-    return {
-      author: 'newjeans official',
-      title: '뉴진스 민지',
-      content: '메이크업 고치는 민지',
-      likeCount: 1000,
-      commentCount: 1000,
-    };
+  getPosts() {
+    return this.postsService.getAllPost();
+  }
+
+  @Get(':id')
+  getPost(@Param('id') id: string) {
+    return this.postsService.getPostById(+id);
+  }
+
+  @Post()
+  postPosts(
+    @Body('author') author: string,
+    @Body('title') title: string,
+    @Body('content') content: string,
+  ) {
+    this.postsService.createPosts(author, title, content);
+  }
+
+  @Put(':id')
+  putPost(
+    @Param('id') id: string,
+    @Body('author') author?: string,
+    @Body('title') title?: string,
+    @Body('content') content?: string,
+  ) {
+    return this.postsService.updatePosts(+id, author, title, content);
+  }
+
+  @Delete(':id')
+  deletePost(@Param('id') id: string) {
+    this.postsService.deletePosts(+id);
   }
 }
